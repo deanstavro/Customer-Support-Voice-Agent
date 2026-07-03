@@ -3,7 +3,7 @@
 A framework for building customer-support voice agents that are high-fidelity, low-latency, and inexpensive to run.
 
 ## What makes it different
-Most voice agents are stateless — each call starts from scratch. This framework gives the agent a **persistent, connected memory graph**. On every customer interaction it records what decision it made, why it made that decision, and what it told the customer, all as connected nodes in Neo4j.
+Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph**. On every customer interaction it records what decision it made, why it made that decision, and what it told the customer, all as connected nodes in Neo4j.
 
 The payoff: both long-term knowledge and the agent's reasoning history live in one queryable graph. You can inspect why the agent said what it said, edit its knowledge directly, and steer it toward better decisions over time.
 
