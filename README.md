@@ -3,7 +3,7 @@
 A framework for building customer-support voice agents that are high-fidelity, low-latency, and inexpensive to run.
 
 ## What makes it different
-Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph. The memory graph includes the agent's long-term knowledge, and it's reasoning memory (context graph), connected**:
+Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph. The memory graph includes the agent's long-term knowledge (your docs modeled as a knowledge graph), and it's reasoning memory (context graph), connected**:
 * Long term memory is stored as a knowledge graph. This allows us return high fidelity context cheaply, and leverages tools, skills and GraphRAG.
 * On every customer interaction it records what decision it made, why it made that decision, and what it told the customer, all as connected nodes in Neo4j.
 
