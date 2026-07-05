@@ -1,0 +1,16 @@
+# Env / secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Model caches (Silero VAD, turn detector weights, etc.)
+.cache/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
