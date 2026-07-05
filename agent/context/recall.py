@@ -1,4 +1,4 @@
-"""Minimal Neo4j knowledge-graph recall for the voice agent."""
+"""Neo4j knowledge-graph retrieval."""
 
 from __future__ import annotations
 
@@ -52,8 +52,23 @@ def _get_retriever() -> VectorCypherRetriever:
     return _retriever
 
 
-async def recall(query: str, *, top_k: int = 3) -> str | None:
-    """Search the knowledge graph and return context for the LLM, or None."""
+def _format_hits(records: list) -> str | None:
+    if not records:
+        return None
+
+    lines: list[str] = []
+    for r in records:
+        line = f"- ({r['source']}) {r['text']}"
+        related = [x for x in (r.get("related") or []) if x.get("label")]
+        if related:
+            related_str = "; ".join(f"{x['type']}: {x['label']}" for x in related[:10])
+            line += f"\n  Related: {related_str}"
+        lines.append(line)
+    return "Relevant knowledge:\n" + "\n".join(lines)
+
+
+async def fetch_kg_context(query: str, *, top_k: int = 3) -> str | None:
+    """Query Neo4j and return formatted context. Used by RecallSession."""
     text = (query or "").strip()
     if not text or not _neo4j_configured():
         return None
@@ -66,15 +81,9 @@ async def recall(query: str, *, top_k: int = 3) -> str | None:
         logger.exception("knowledge graph recall failed")
         return None
 
-    if not hits.records:
-        return None
+    return _format_hits(hits.records)
 
-    lines: list[str] = []
-    for r in hits.records:
-        line = f"- ({r['source']}) {r['text']}"
-        related = [x for x in (r.get("related") or []) if x.get("label")]
-        if related:
-            related_str = "; ".join(f"{x['type']}: {x['label']}" for x in related[:10])
-            line += f"\n  Related: {related_str}"
-        lines.append(line)
-    return "Relevant knowledge:\n" + "\n".join(lines)
+
+async def recall(query: str, *, top_k: int = 3) -> str | None:
+    """Stateless recall — always hits Neo4j. Prefer RecallSession in production."""
+    return await fetch_kg_context(query, top_k=top_k)

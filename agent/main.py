@@ -19,20 +19,23 @@ from livekit import agents
 from livekit.agents import Agent, AgentSession, inference
 from livekit.plugins import openai
 
-from agent.context import recall
+from agent.context import RecallSession
 
 load_dotenv()
 
 
 class SupportAgent(Agent):
-    def __init__(self) -> None:
+    def __init__(self, *, session_id: str) -> None:
         super().__init__(
             instructions="You are a helpful customer support agent. "
             "Be concise, warm, and accurate."
         )
+        self._recall_session = RecallSession(session_id=session_id)
 
     async def on_user_turn_completed(self, turn_ctx, new_message) -> None:
-        if ctx := await recall(new_message.text_content or ""):
+        if ctx := await self._recall_session.recall_for_turn(
+            new_message.text_content or ""
+        ):
             turn_ctx.add_message(role="system", content=ctx)
 
 
@@ -47,7 +50,10 @@ async def entrypoint(ctx: agents.JobContext) -> None:
         turn_detection=inference.TurnDetector(),  # LiveKit inference gateway
     )
 
-    await session.start(room=ctx.room, agent=SupportAgent())
+    await session.start(
+        room=ctx.room,
+        agent=SupportAgent(session_id=ctx.room.name),
+    )
     await session.generate_reply(instructions="Greet the customer and offer help.")
 
     # SEAM 2 — decision write.
