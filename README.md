@@ -57,6 +57,6 @@ The payoff: Knowledge Graph for long term memory will yield better fidelity (com
 
 ## Roadmap
 - Configurable voice models
-- Connect to realtime customer data for more intelligent decisions
+- Connect to realtime customer data for more intelligent decisions (pull in CustomerContext)
 - Let the agent A/B test decisions
 - Support for more models, voices, and hosting options

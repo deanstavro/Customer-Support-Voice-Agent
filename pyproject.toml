@@ -3,6 +3,7 @@ name = "customer-support-voice-agent"
 version = "0.1.0"
 description = "A customer-support voice agent with a persistent, connected memory graph."
 readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
     # Core LiveKit Agents (1.6+) + OpenAI plugin for the componentized
