@@ -1,10 +1,5 @@
-"""Context / memory layer.
+"""Context / memory layer — Neo4j-backed knowledge recall."""
 
-This package will hold the Neo4j-backed memory graph:
-  - long-term knowledge (docs modeled as a knowledge graph)
-  - reasoning memory (per-interaction decision / reasoning / response nodes)
+from .recall import recall
 
-Kept empty for now. The agent wires its recall/write seams to functions
-defined here (see agent/main.py: on_user_turn_completed and the post-reply
-write in the entrypoint).
-"""
+__all__ = ["recall"]

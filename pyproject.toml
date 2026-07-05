@@ -10,8 +10,7 @@ dependencies = [
     # detection uses the inference gateway (livekit.agents.inference), so no
     # separate silero / turn-detector plugin extras are needed.
     "livekit-agents[openai]>=1.6.0",
+    "neo4j>=5.0",
+    "neo4j-graphrag>=1.0",
     "python-dotenv>=1.0.0",
 ]
-
-[tool.uv]
-# Neo4j / context-layer deps get added here as the memory layer lands.

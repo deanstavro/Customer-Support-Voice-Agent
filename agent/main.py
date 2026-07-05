@@ -19,6 +19,8 @@ from livekit import agents
 from livekit.agents import Agent, AgentSession, inference
 from livekit.plugins import openai
 
+from agent.context import recall
+
 load_dotenv()
 
 
@@ -30,12 +32,8 @@ class SupportAgent(Agent):
         )
 
     async def on_user_turn_completed(self, turn_ctx, new_message) -> None:
-        # SEAM 1 — Neo4j recall.
-        # Query the knowledge graph for context relevant to `new_message`, then
-        # add it to `turn_ctx` so the LLM sees it before replying. e.g.:
-        #   ctx = await recall(new_message.text_content)
-        #   turn_ctx.add_message(role="system", content=ctx)
-        pass
+        if ctx := await recall(new_message.text_content or ""):
+            turn_ctx.add_message(role="system", content=ctx)
 
 
 async def entrypoint(ctx: agents.JobContext) -> None:
