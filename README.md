@@ -9,7 +9,7 @@ Most voice agents are stateless - each call starts from scratch. This framework 
 
 In the future, our reasoning memory will allow us to A/B test new underlying policies in achieving better CSAT/satisfaction metrics.
 
-The payoff: both long-term knowledge and the agent's reasoning history live in one queryable graph. You can inspect why the agent said what it said, edit its knowledge directly, and steer it toward better decisions over time.
+The payoff: Knowledge Graph for long term memory will yield better fidelity (compared to vectors). And both long-term knowledge and the agent's reasoning history live in one queryable graph that is now traceable. You can inspect why the agent said what it said, edit its knowledge directly, and steer it toward better decisions over time.
 
 ## How it works
 1. **Configure** — set your docs URL, Neo4j keys, LiveKit keys, and model keys in `.env` (OpenAI supported today).
