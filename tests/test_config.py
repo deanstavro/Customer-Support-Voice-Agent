@@ -44,12 +44,17 @@ def test_load_config_defaults(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_load_config_env_overrides(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    system_file = tmp_path / "system.txt"
+    system_file.write_text("Custom system prompt\n", encoding="utf-8")
+    greeting_file = tmp_path / "greeting.txt"
+    greeting_file.write_text("Say hello\n", encoding="utf-8")
+
     env_file = tmp_path / ".env"
     env_file.write_text(
         "\n".join(
             [
-                "AGENT_INSTRUCTIONS=Custom system prompt",
-                "AGENT_GREETING=Say hello",
+                f"AGENT_INSTRUCTIONS_FILE={system_file}",
+                f"AGENT_GREETING_FILE={greeting_file}",
                 "LLM_MODEL=gpt-4.1-mini",
                 "TTS_VOICE=nova",
                 "TTS_MODEL=tts-1-hd",

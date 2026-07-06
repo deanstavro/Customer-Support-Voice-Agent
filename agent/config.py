@@ -52,14 +52,10 @@ def _read_text_file(path: Path) -> str:
 
 def _resolve_prompt(
     *,
-    env_value: str | None,
     env_file_key: str,
     default_file: Path,
     builtin: str,
 ) -> str:
-    if env_value and env_value.strip():
-        return env_value.strip()
-
     file_path = os.environ.get(env_file_key)
     if file_path:
         return _read_text_file(Path(file_path).expanduser())
@@ -141,13 +137,11 @@ def load_config(*, env_file: str | Path | None = None) -> AgentConfig:
 
     return AgentConfig(
         instructions=_resolve_prompt(
-            env_value=os.environ.get("AGENT_INSTRUCTIONS"),
             env_file_key="AGENT_INSTRUCTIONS_FILE",
             default_file=_DEFAULT_SYSTEM_PROMPT,
             builtin=_BUILTIN_SYSTEM,
         ),
         greeting=_resolve_prompt(
-            env_value=os.environ.get("AGENT_GREETING"),
             env_file_key="AGENT_GREETING_FILE",
             default_file=_DEFAULT_GREETING_PROMPT,
             builtin=_BUILTIN_GREETING,

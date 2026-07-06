@@ -58,12 +58,10 @@ Copy `.env.example` to `.env` and set your credentials. Agent behavior is config
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `AGENT_INSTRUCTIONS` | `agent/prompts/system.txt` | System prompt (inline multiline env) |
-| `AGENT_INSTRUCTIONS_FILE` | — | Path to a custom system prompt file |
-| `AGENT_GREETING` | `agent/prompts/greeting.txt` | Opening-line instruction |
-| `AGENT_GREETING_FILE` | — | Path to a custom greeting file |
+| `AGENT_INSTRUCTIONS_FILE` | `agent/prompts/system.txt` | Path to system prompt file |
+| `AGENT_GREETING_FILE` | `agent/prompts/greeting.txt` | Path to greeting instruction file |
 
-Resolution order: env value → env file path → default prompt file → built-in fallback.
+Resolution order: env file path → default prompt file → built-in fallback.
 
 ### Agent characteristics
 
