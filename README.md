@@ -1,6 +1,4 @@
-# Customer Support Voice Agent
-
-A framework for building customer-support voice agents that are high-fidelity, low-latency, and inexpensive to run.
+# Enterprise Memory for Voice Agents
 
 ## What makes it different
 Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph. The memory graph includes the agent's long-term knowledge (your docs modeled as a knowledge graph), and it's reasoning memory (context graph), connected**:
