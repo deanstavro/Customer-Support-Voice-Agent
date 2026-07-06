@@ -90,3 +90,26 @@ Resolution order: env file path → default prompt file → built-in fallback.
 - Connect to realtime customer data for more intelligent decisions (pull in CustomerContext)
 - Let the agent A/B test decisions
 - Support for more models, voices, and hosting options
+
+V1 (Current Version)
+Talk to your docs
+GraphRAG
+Voice
+
+v2
+Remember conversations
+Store decisions
+Explain why answers were given
+
+v3
+Learn from thousands of conversations
+Identify successful resolutions
+Recommend better responses
+Detect outdated documentation
+Suggest documentation improvements
+
+v4
+Multiple agents sharing organizational memory
+Customer support, sales, onboarding, success
+Shared enterprise ontology
+Shared reasoning memory
