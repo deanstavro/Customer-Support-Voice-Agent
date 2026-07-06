@@ -1,7 +1,7 @@
 # Enterprise Memory for Voice Agents
 
 ## What makes it different
-Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph. The memory graph includes the agent's long-term knowledge (your docs modeled as a knowledge graph), and it's reasoning memory (context graph), connected**:
+Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph via Neo4j. The memory graph includes the agent's long-term knowledge (your docs modeled as a knowledge graph), and it's reasoning memory (context graph), connected**:
 * Long term memory is stored as a knowledge graph. This allows us return high fidelity context cheaply, and leverages tools, skills and GraphRAG.
 * On every customer interaction it records what decision it made, why it made that decision, and what it told the customer, all as connected nodes in Neo4j.
 
@@ -11,7 +11,7 @@ The payoff: Knowledge Graph for long term memory will yield better fidelity (com
 
 ## How it works
 1. **Configure** — set your docs URL, Neo4j keys, LiveKit keys, and model keys in `.env` (OpenAI supported today).
-2. **Ingest** — the agent ingests your docs into a Neo4j knowledge graph, building a connected representation of everything your documents cover.
+2. **Ingest** — the agent ingests your docs into a Neo4j knowledge graph, building a connected representation of everything your documents cover. Alternatively, if you have your graph with embeddings in Neo4j, simply connect to that instance in your environment variables.
 3. **Customize** — set your agent's prompt and voice.
 4. **Run** — try out your agent, and edit its knowledge directly in Neo4j.
 5. **Learn** — every interaction is stored as a context graph (decision, reasoning, and response), so you can review and guide the agent's decision-making.
