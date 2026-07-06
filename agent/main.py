@@ -14,23 +14,21 @@ Run it:
   uv run python -m agent.main dev       # connect to a LiveKit room
 """
 
-from dotenv import load_dotenv
 from livekit import agents
 from livekit.agents import Agent, AgentSession, inference
 from livekit.plugins import openai
 
+from agent.config import AgentConfig, load_config
 from agent.context import RecallSession
-
-load_dotenv()
 
 
 class SupportAgent(Agent):
-    def __init__(self, *, session_id: str) -> None:
-        super().__init__(
-            instructions="You are a helpful customer support agent. "
-            "Be concise, warm, and accurate."
+    def __init__(self, *, config: AgentConfig, session_id: str) -> None:
+        super().__init__(instructions=config.instructions)
+        self._recall_session = RecallSession(
+            session_id=session_id,
+            recall=config.recall,
         )
-        self._recall_session = RecallSession(session_id=session_id)
 
     async def on_user_turn_completed(self, turn_ctx, new_message) -> None:
         if ctx := await self._recall_session.recall_for_turn(
@@ -39,22 +37,44 @@ class SupportAgent(Agent):
             turn_ctx.add_message(role="system", content=ctx)
 
 
+def _build_openai_stt(config: AgentConfig):
+    if config.stt_model:
+        return openai.STT(model=config.stt_model)
+    return openai.STT()
+
+
+def _build_openai_llm(config: AgentConfig):
+    return openai.LLM(model=config.llm_model)
+
+
+def _build_openai_tts(config: AgentConfig):
+    kwargs: dict[str, str] = {}
+    if config.tts_model:
+        kwargs["model"] = config.tts_model
+    if config.tts_voice:
+        kwargs["voice"] = config.tts_voice
+    return openai.TTS(**kwargs) if kwargs else openai.TTS()
+
+
 async def entrypoint(ctx: agents.JobContext) -> None:
+    config = load_config()
     await ctx.connect()
 
-    session = AgentSession(
-        stt=openai.STT(),                       # Whisper
-        llm=openai.LLM(model="gpt-4o"),         # componentized (exposes text turn)
-        tts=openai.TTS(),
-        # VAD is bundled into AgentSession by default (local Silero).
-        turn_detection=inference.TurnDetector(),  # LiveKit inference gateway
-    )
+    session_kwargs: dict = {
+        "stt": _build_openai_stt(config),
+        "llm": _build_openai_llm(config),
+        "tts": _build_openai_tts(config),
+    }
+    if config.turn_detection == "livekit":
+        session_kwargs["turn_detection"] = inference.TurnDetector()
+
+    session = AgentSession(**session_kwargs)
 
     await session.start(
         room=ctx.room,
-        agent=SupportAgent(session_id=ctx.room.name),
+        agent=SupportAgent(config=config, session_id=ctx.room.name),
     )
-    await session.generate_reply(instructions="Greet the customer and offer help.")
+    await session.generate_reply(instructions=config.greeting)
 
     # SEAM 2 — decision write.
     # Persist the interaction (decision, reasoning, response) to Neo4j as

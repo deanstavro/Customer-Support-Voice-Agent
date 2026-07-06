@@ -10,18 +10,20 @@ import neo4j
 from neo4j_graphrag.embeddings.openai import OpenAIEmbeddings
 from neo4j_graphrag.retrievers import VectorCypherRetriever
 
+from agent.config import RecallConfig
+
 logger = logging.getLogger(__name__)
 
-_retriever: VectorCypherRetriever | None = None
+_retrievers: dict[tuple[str, int], VectorCypherRetriever] = {}
 
-GRAPH_HOPS = 4
 
-RETRIEVAL_QUERY = f"""
+def _retrieval_query(graph_hops: int) -> str:
+    return f"""
 RETURN node.text AS text,
        node.source AS source,
        score,
        collect {{
-         MATCH (node)-[*1..{GRAPH_HOPS}]-(related)
+         MATCH (node)-[*1..{graph_hops}]-(related)
          WHERE related <> node
          RETURN DISTINCT
            labels(related)[0] AS type,
@@ -34,10 +36,11 @@ def _neo4j_configured() -> bool:
     return bool(os.environ.get("NEO4J_URI") and os.environ.get("NEO4J_PASSWORD"))
 
 
-def _get_retriever() -> VectorCypherRetriever:
-    global _retriever
-    if _retriever is None:
-        _retriever = VectorCypherRetriever(
+def _get_retriever(recall: RecallConfig) -> VectorCypherRetriever:
+    cache_key = (recall.vector_index, recall.graph_hops)
+    retriever = _retrievers.get(cache_key)
+    if retriever is None:
+        retriever = VectorCypherRetriever(
             driver=neo4j.GraphDatabase.driver(
                 os.environ["NEO4J_URI"],
                 auth=(
@@ -45,11 +48,12 @@ def _get_retriever() -> VectorCypherRetriever:
                     os.environ["NEO4J_PASSWORD"],
                 ),
             ),
-            index_name=os.environ.get("NEO4J_VECTOR_INDEX", "chunk_embeddings"),
+            index_name=recall.vector_index,
             embedder=OpenAIEmbeddings(),
-            retrieval_query=RETRIEVAL_QUERY,
+            retrieval_query=_retrieval_query(recall.graph_hops),
         )
-    return _retriever
+        _retrievers[cache_key] = retriever
+    return retriever
 
 
 def _format_hits(records: list) -> str | None:
@@ -67,15 +71,17 @@ def _format_hits(records: list) -> str | None:
     return "Relevant knowledge:\n" + "\n".join(lines)
 
 
-async def fetch_kg_context(query: str, *, top_k: int = 3) -> str | None:
+async def fetch_kg_context(query: str, *, recall: RecallConfig) -> str | None:
     """Query Neo4j and return formatted context. Used by RecallSession."""
     text = (query or "").strip()
-    if not text or not _neo4j_configured():
+    if not text or not recall.enabled or not _neo4j_configured():
         return None
 
     try:
         hits = await asyncio.to_thread(
-            _get_retriever().search, query_text=text, top_k=top_k
+            _get_retriever(recall).search,
+            query_text=text,
+            top_k=recall.top_k,
         )
     except Exception:
         logger.exception("knowledge graph recall failed")
@@ -84,6 +90,6 @@ async def fetch_kg_context(query: str, *, top_k: int = 3) -> str | None:
     return _format_hits(hits.records)
 
 
-async def recall(query: str, *, top_k: int = 3) -> str | None:
+async def recall(query: str, *, recall: RecallConfig) -> str | None:
     """Stateless recall — always hits Neo4j. Prefer RecallSession in production."""
-    return await fetch_kg_context(query, top_k=top_k)
+    return await fetch_kg_context(query, recall=recall)

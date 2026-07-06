@@ -15,3 +15,9 @@ dependencies = [
     "neo4j-graphrag>=1.0",
     "python-dotenv>=1.0.0",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

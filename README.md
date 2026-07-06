@@ -51,9 +51,43 @@ The payoff: Knowledge Graph for long term memory will yield better fidelity (com
    ```
 
 ## How to configure
-1. Agent prompt
-2. Agent characteristics (voice, model, etc.)
-3. Long term memory (docs, knowledge graph)
+
+Copy `.env.example` to `.env` and set your credentials. Agent behavior is configured via environment variables and optional prompt files.
+
+### Agent prompt
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AGENT_INSTRUCTIONS` | `agent/prompts/system.txt` | System prompt (inline multiline env) |
+| `AGENT_INSTRUCTIONS_FILE` | — | Path to a custom system prompt file |
+| `AGENT_GREETING` | `agent/prompts/greeting.txt` | Opening-line instruction |
+| `AGENT_GREETING_FILE` | — | Path to a custom greeting file |
+
+Resolution order: env value → env file path → default prompt file → built-in fallback.
+
+### Agent characteristics
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LLM_MODEL` | `gpt-4o` | OpenAI chat model |
+| `TTS_VOICE` | OpenAI default | e.g. `alloy`, `nova`, `shimmer` |
+| `TTS_MODEL` | plugin default | OpenAI TTS model |
+| `STT_MODEL` | plugin default | OpenAI Whisper model |
+| `TURN_DETECTION` | `livekit` | `livekit` or `none` |
+
+### Long-term memory / recall
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NEO4J_URI` | — | Neo4j connection URI |
+| `NEO4J_USERNAME` | `neo4j` | Neo4j username |
+| `NEO4J_PASSWORD` | — | Neo4j password |
+| `NEO4J_VECTOR_INDEX` | `chunk_embeddings` | Vector index name |
+| `RECALL_ENABLED` | `true` | Inject KG context on substantive turns |
+| `RECALL_TOP_K` | `3` | Chunks retrieved per query |
+| `RECALL_GRAPH_HOPS` | `4` | Related-node traversal depth |
+| `RECALL_MIN_WORDS` | `4` | Min words before recall triggers |
+| `RECALL_TOPIC_OVERLAP` | `0.25` | Topic-shift threshold (0–1) |
 
 ## Roadmap
 - Configurable voice models
