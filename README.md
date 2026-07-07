@@ -1,13 +1,15 @@
 # Enterprise Memory for Voice Agents
 
 ## What makes it different
-Most voice agents are stateless - each call starts from scratch. This framework gives the agent a **persistent, connected memory graph via Neo4j. The memory graph includes the agent's long-term knowledge (your docs modeled as a knowledge graph), and it's reasoning memory (context graph), connected**:
-* Long term memory is stored as a knowledge graph. This allows us return high fidelity context cheaply, and leverages tools, skills and GraphRAG.
-* On every customer interaction it records what decision it made, why it made that decision, and what it told the customer, all as connected nodes in Neo4j.
+Most voice agents are stateless. Every conversation starts from scratch. This framework gives the agent a persistent memory graph backed by Neo4j.
 
-In the future, our reasoning memory will allow us to A/B test new underlying policies in achieving better CSAT/satisfaction metrics.
+The memory graph consists of two connected layers:
+* Long-term knowledge: Your documentation and business knowledge are modeled as a knowledge graph. This enables high-fidelity retrieval of business context, supports GraphRAG, and allows the agent to use structured tools and skills.
+* Reasoning memory: Every customer interaction records the decision the agent made, why it made that decision, and what it ultimately told the customer. Those decisions become connected, queryable nodes in the graph.
 
-The payoff: Knowledge Graph for long term memory will yield better fidelity (compared to vectors). And both long-term knowledge and the agent's reasoning history live in one queryable graph that is now traceable. You can inspect why the agent said what it said, edit its knowledge directly, and steer it toward better decisions over time.
+Over time, the reasoning memory becomes a dataset for improving the agent. For example, you can compare how different policies, prompts, or workflows affect CSAT, resolution rates, or other business metrics.
+
+The payoff: Both the agent's long-term knowledge and its reasoning history live in a single connected graph. Every answer is traceable - you can inspect why the agent responded the way it did, edit its knowledge directly, and continuously improve future decisions based on historical outcomes.
 
 ## How it works
 1. **Configure** — set your docs URL, Neo4j keys, LiveKit keys, and model keys in `.env` (OpenAI supported today).
