@@ -13,12 +13,14 @@ Run it:
   uv run python -m agent.main console   # local terminal voice loop
   uv run python -m agent.main dev       # connect to a LiveKit room
 """
-
+from dotenv import load_dotenv
 from livekit import agents
 from livekit.agents import Agent, AgentSession, inference
 from livekit.plugins import openai
 
 from agent.config import AgentConfig, load_config
+
+load_dotenv()
 from agent.context import RecallSession
 
 
