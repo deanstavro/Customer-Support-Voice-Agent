@@ -1,4 +1,4 @@
-# Enterprise Memory for Voice Agents
+# KG for Voice Agents
 
 ## What makes it different
 Most voice agents are stateless. Every conversation starts from scratch. This framework gives the agent a persistent memory graph backed by Neo4j.
